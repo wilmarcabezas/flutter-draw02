@@ -7,6 +7,8 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import 'package:http/http.dart' as http;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -22,6 +24,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _selectedColor = 'Proceso 1';
   String _documento = '';
+
+@override
+  void initState() {
+    super.initState();
+    _selectedColor = 'Proceso 1';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +57,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 onChanged: (value) {
                   setState(() {
@@ -137,6 +145,30 @@ class _MyAppState extends State<MyApp> {
 
     print('Image uploaded to Firebase Storage.');
     print(downloadURL);
+    print('mierda');
+    print(_selectedColor);
+    if(_selectedColor=='Proceso 1'){
+      _selectedColor='1';
+    }
+    if(_selectedColor=='Proceso 2'){
+      _selectedColor='2';
+    }
+    if(_selectedColor=='Proceso 3'){
+      _selectedColor='3';
+    }
+    // Data to send in the body of the request
+  final Map<String, String> requestData = {
+    'documento': _documento,
+    'consentimiento': _selectedColor,
+    'firma':downloadURL
+  };
+
+// Call the Google Cloud Function using http.post
+  final response = await http.post(
+    Uri.parse('https://us-central1-sismedicorafaelrivera.cloudfunctions.net/registerDataX4'),
+    body: requestData,
+  );
+
   }
 }
 
